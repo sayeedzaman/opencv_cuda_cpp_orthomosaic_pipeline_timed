@@ -1,0 +1,9 @@
+# Large binary dependencies
+deps/
+
+# Input imagery
+images/
+
+# Pipeline output
+output/
+
