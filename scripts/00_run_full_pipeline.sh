@@ -22,7 +22,7 @@ set -e
 # CHANGE THIS PATH IF NEEDED
 # -----------------------------
 
-PROJECT_DIR="/home/user/project"
+PROJECT_DIR="${PROJECT_DIR:-/project}"
 
 IMAGE_DIR="$PROJECT_DIR/images"
 OUTPUT_DIR="$PROJECT_DIR/output"
@@ -213,25 +213,24 @@ start_step "STEP 0.1: Check C++ OpenCV CUDA availability"
 end_step
 
 
-start_step "STEP 1: COLMAP GPU feature extraction"
+start_step "STEP 1: COLMAP feature extraction (CPU - no OpenGL in Docker)"
 
 colmap feature_extractor \
   --database_path "$COLMAP_DB" \
   --image_path "$IMAGE_DIR" \
   --ImageReader.single_camera 1 \
-  --SiftExtraction.use_gpu 1 \
-  --SiftExtraction.gpu_index "$GPU_INDEX" \
-  --SiftExtraction.max_num_features 12000
+  --SiftExtraction.use_gpu 0 \
+  --SiftExtraction.num_threads 2 \
+  --SiftExtraction.max_num_features 4000
 
 end_step
 
 
-start_step "STEP 2: COLMAP GPU feature matching"
+start_step "STEP 2: COLMAP feature matching (CPU - no OpenGL in Docker)"
 
 colmap exhaustive_matcher \
   --database_path "$COLMAP_DB" \
-  --SiftMatching.use_gpu 1 \
-  --SiftMatching.gpu_index "$GPU_INDEX"
+  --SiftMatching.use_gpu 0
 
 end_step
 
@@ -345,9 +344,9 @@ colmap patch_match_stereo \
   --PatchMatchStereo.geom_consistency true \
   --PatchMatchStereo.filter true \
   --PatchMatchStereo.gpu_index "$GPU_INDEX" \
-  --PatchMatchStereo.num_samples 15 \
-  --PatchMatchStereo.num_iterations 5 \
-  --PatchMatchStereo.window_radius 5 \
+  --PatchMatchStereo.num_samples 8 \
+  --PatchMatchStereo.num_iterations 3 \
+  --PatchMatchStereo.window_radius 3 \
   --PatchMatchStereo.window_step 1 \
   --PatchMatchStereo.min_triangulation_angle 1.5
 

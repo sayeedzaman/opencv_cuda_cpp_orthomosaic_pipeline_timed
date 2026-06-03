@@ -7,3 +7,5 @@ images/
 # Pipeline output
 output/
 
+#build
+build/
